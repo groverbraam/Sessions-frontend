@@ -21,7 +21,7 @@ function App() {
   };
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3003");
+    socketRef.current = io("https://sessions-chat.herokuapp.com/3");
     return () => socketRef.current.disconnect();
   }, []);
 

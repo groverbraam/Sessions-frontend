@@ -33,7 +33,7 @@ function Room(props) {
   const messagesEndRef = useRef(null);
 
   // console.log(props.name);
-  // const socket = io("http://localhost:3003")
+  // const socket = io("https://sessions-chat.herokuapp.com/")
 
   // const scrollToBottom = () => {
   //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -173,7 +173,7 @@ function Room(props) {
   };
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3003");
+    socketRef.current = io("https://sessions-chat.herokuapp.com/");
     return () => socketRef.current.disconnect();
   }, []);
 

@@ -41,7 +41,7 @@ function RoomList() {
   };
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3003");
+    socketRef.current = io("https://sessions-chat.herokuapp.com/");
     return () => socketRef.current.disconnect();
   }, []);
 
