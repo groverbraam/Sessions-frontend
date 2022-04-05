@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import ReactPlayer from "react-player/lazy";
-import ScrollToBottom, {
-  useScrollToBottom,
-  useSticky,
-} from "react-scroll-to-bottom";
 import "../App.css";
 import Button from "@mui/material/Button";
 import Slider from "@mui/material/Slider";

@@ -1,11 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import "../App.css";
 
 function Home(props) {
-  const socketRef = useRef();
-
   //   const handleNameSubmit = (e) => {
   //     e.preventDefault();
   //     setName(e.target.value);
