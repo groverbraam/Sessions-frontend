@@ -1,14 +1,226 @@
-.react-player {
+/* .react-player {
   margin: 0 auto;
   padding-top: 5%;
-
+} */
+body {
+  background-color: whitesmoke;
+  color: black;
 }
 .chat {
   padding-right: 5%;
-  display: flex; 
+  display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   align-content: flex-end;
   justify-content: flex-start;
   align-items: center;
+}
+.main-container {
+  padding-top: 65px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+.user-count {
+  display: flex;
+}
+.react-container {
+  padding-top: 100px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+.time-slider {
+  display: flex;
+}
+.chat-box {
+  display: block;
+  border: 1px solid #0288d1;
+  box-shadow: 3px 3px #42a5f5,
+  -.5em 0 .1em #90caf9;
+  padding: 5px;
+  margin-top: 5px;
+  width: 500px;
+  height: 579px;
+  overflow-y: scroll;
+}
+.queue-box {
+  display: block;
+  padding: 5px;
+  margin-top: 5px;
+  width: 350px;
+  height: 579px;
+  /* overflow-x: scroll; */
+  text-align: center;
+}
+.song-submission {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #0288d1;
+  box-shadow: 3px 3px #42a5f5,
+  -.5em 0 .1em #90caf9;
+  padding: 5px;
+  margin-top: 5px;
+  width: 350px;
+  height: 579px;
+  overflow-y: scroll;
+}
+.queue {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1px solid #0288d1;
+  box-shadow: 3px 3px #42a5f5,
+  -.5em 0 .1em #90caf9;
+}
+.sub-container {
+  display: flex;
+  flex-direction: row-reverse;
+}
+.chat-box-header {
+  text-align: center;
+}
+.submit-form {
+  text-align: center;
+}
+.message-form {
+  text-align: center;
+}
+.song-name {
+  margin-top: 10px;
+}
+.song-link {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.chat-header {
+  border: 1px solid #0288d1;
+  box-shadow: 3px 3px #42a5f5,
+  -.5em 0 .1em #90caf9;
+}
+.space {
+  padding-left: 20px;
+}
+.joinOuterContainer {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  height: 60vh;
+  align-items: center;
+}
+
+.joinInnerContainer {
+  width: 20%;
+}
+
+.joinInput {
+  border-radius: 0;
+  padding: 15px 20px;
+  width: 80%;
+}
+
+.heading {
+  color: black;
+  font-size: 2.5em;
+  padding-bottom: 10px; 
+}
+
+.button {
+  color: #fff !important;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: #2979ff;
+  padding: 20px;
+  border-radius: 5px;
+  display: inline-block;
+  border: none;
+  width: 100%;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+.nav-header {
+  position: sticky;
+  top: 0;
+  border: 1px solid #0288d1;
+  padding: 40px;
+}
+.footer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  position: sticky;
+  bottom: 100;
+  margin-top: 20px;
+  border: 1px solid #0288d1;
+  list-style: none;
+}
+a, a:visited {
+  text-decoration: none;
+  color: black;
+}
+@media (max-width: 959px) {
+  .joinInput {
+    border-radius: 0;
+    padding: 15px 20px;
+    width: 70%;
+  }
+  .chat-box {
+    display: block;
+    border: 1px solid #0288d1;
+    box-shadow: 3px 3px #42a5f5,
+      -.5em 0 .1em #90caf9;
+    padding: 5px;
+    margin-top: 5px;
+    width: 500px;
+    height: 179px;
+    overflow-y: scroll;
+  }
+  
+  .queue-box {
+    display: block;
+    padding: 5px;
+    margin-top: 5px;
+    width: 350px;
+    height: 179px;
+    /* overflow-x: scroll; */
+    text-align: center;
+  }
+  
+  .song-submission {
+    display: flex;
+    flex-direction: column-reverse;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #0288d1;
+    box-shadow: 3px 3px #42a5f5,
+      -.5em 0 .1em #90caf9;
+    padding: 5px;
+    margin-top: 5px;
+    width: 350px;
+    height: 179px;
+    overflow-y: scroll;
+  }
+}
+@media (min-width: 320px) and (max-width: 480px) {
+  .joinOuterContainer {
+    height: 100%;
+  }
+
+  .joinInnerContainer {
+    width: 90%;
+  }
+}
+
+button:focus {
+  outline: 0;
 }

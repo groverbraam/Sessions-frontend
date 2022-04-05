@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { Routes, Route, Link, Navigate } from "react-router-dom";
 import "../App.css";
 
-function Home() {
-  const [name, setName] = useState("");
+function Home(props) {
+  const socketRef = useRef();
 
+  //   const handleNameSubmit = (e) => {
+  //     e.preventDefault();
+  //     setName(e.target.value);
+  //   };
   return (
     <div className="joinOuterContainer">
       <div className="joinInnerContainer">
@@ -15,10 +19,15 @@ function Home() {
             placeholder="Username"
             className="joinInput"
             type="text"
-            onChange={(event) => setName(event.target.value)}
+            onChange={(e) => props.handleNameSubmit(e)}
           />
         </div>
-        <Link onClick={(e) => (!name ? e.preventDefault() : null)} to="/rooms">
+        <Link
+          onClick={(e) =>
+            !props.name ? e.preventDefault() : props.submitName()
+          }
+          to="/room"
+        >
           <button className={"button mt-20"} type="submit">
             Create User
           </button>

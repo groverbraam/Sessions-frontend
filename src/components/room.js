@@ -1,9 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import ReactPlayer from "react-player/lazy";
+import ScrollToBottom, {
+  useScrollToBottom,
+  useSticky,
+} from "react-scroll-to-bottom";
 import "../App.css";
+import Button from "@mui/material/Button";
+import Slider from "@mui/material/Slider";
+import Input from "@mui/material/Input";
+import NavBar from "./navBar";
+import Footer from "./footer";
+import ReactEmoji from "react-emoji";
 
-function Room() {
+function Room(props) {
   const [message, setMessage] = useState("");
   const [Duration, setDuration] = useState(0);
   const [chat, setChat] = useState([]);
@@ -13,7 +23,6 @@ function Room() {
   const [upNext, setUpNext] = useState([]);
   const [playing, setPlaying] = useState(true);
   const [played, setPlayed] = useState(0);
-  const [name, setName] = useState("");
   const [countUsers, setCountUsers] = useState(0);
   const [mute, setMute] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -21,8 +30,18 @@ function Room() {
 
   const socketRef = useRef();
   const playerRef = useRef();
+  const messagesEndRef = useRef(null);
 
+  // console.log(props.name);
   // const socket = io("http://localhost:3003")
+
+  // const scrollToBottom = () => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
+
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [chat]);
 
   const handleSync = () => {
     socketRef.current.once(
@@ -32,6 +51,7 @@ function Room() {
         setSongs(songs);
         setUpNext(upNext);
         setDuration(Duration);
+        setPlaying(true);
       }
     );
   };
@@ -82,7 +102,7 @@ function Room() {
 
   const onMessageSubmit = (e) => {
     e.preventDefault();
-    socketRef.current.emit("send-message", message);
+    socketRef.current.emit("send-message", message, props.name);
     e.target.reset();
     setMessage("");
   };
@@ -91,6 +111,7 @@ function Room() {
     let soundcloud = songSubmission.startsWith("https://soundcloud.com/");
     let youtube = songSubmission.startsWith("https://www.youtube.com/");
     if (youtube === false && soundcloud === false) {
+      e.preventDefault();
       alert("Please submit an YouTube/Soundcloud link.");
       e.target.reset();
     } else {
@@ -101,7 +122,11 @@ function Room() {
         songSubmissionTitle,
         songs
       );
-      socketRef.current.emit("submit-notification", songSubmissionTitle);
+      socketRef.current.emit(
+        "submit-notification",
+        songSubmissionTitle,
+        props.name
+      );
       e.target.reset();
       // setSubmitted(true)
     }
@@ -111,23 +136,31 @@ function Room() {
     setPlayed(e.target.value);
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chat]);
+
   const renderChat = () => {
+    const names = props.name;
     return chat.map((message, index) => (
-      <div className="entireChat" key={index}>
-        <p className="message">
-          {message.name ? (
-            <span>
-              <strong>
-                {message.name} : {message.message}
-              </strong>
-            </span>
-          ) : (
-            <span>
-              <strong>{message}</strong>
-            </span>
-          )}
-        </p>
-      </div>
+      <>
+        <div className="entireChat" key={index}>
+          <p className="message">
+            {message.name ? (
+              <span>
+                {message.name}: {ReactEmoji.emojify(message.message)}
+              </span>
+            ) : (
+              <span>{ReactEmoji.emojify(message.message)}</span>
+            )}
+          </p>
+        </div>
+        <div ref={messagesEndRef}></div>
+      </>
     ));
   };
 
@@ -147,11 +180,20 @@ function Room() {
   useEffect(() => {
     // SEND TIME FOR SYNC
     socketRef.current.emit("sync-audio", played, songs, upNext, Duration);
+  }, [played]);
 
+  useEffect(() => {
     // CHECKS FOR SKIP
     socketRef.current.on("skip", (skip) => {
       checkEnding();
     });
+  }, []);
+
+  useEffect(() => {
+    // // CHECKS FOR SKIP
+    // socketRef.current.once("skip", (skip) => {
+    //   checkEnding();
+    // });
 
     //  STORES MESSAGES IN THE CHAT
     socketRef.current.once("receive-message", (message, name) => {
@@ -204,99 +246,127 @@ function Room() {
     socketRef.current.on("send-notification", (message) => {
       setChat([...chat, message]);
     });
-  }, [chat, played]);
+  }, [chat, songs, upNext]);
 
   // console.log(played)
   // console.log(submissionId)
   // console.log(submitted)
 
   return (
-    <div className="Main-container">
-      <p>Users: {countUsers}</p>
+    <>
+      <NavBar />
+      <div className="main-container">
+        <div className="user-count">
+          <p>Users: {countUsers}</p>
+        </div>
 
-      {/* REACT PLAYER */}
-      <ReactPlayer
-        className="react-player"
-        ref={playerRef}
-        url={songs}
-        playing={playing}
-        autoPlay={true}
-        muted={mute}
-        style={{ pointerEvents: "none" }}
-        config={{
-          youtube: { playerVars: { modestbranding: 1, disablekb: 1 } },
-          soundcloud: {
-            options: {
-              sharing: false,
-              download: false,
-              show_artwork: false,
-              show_playcount: false,
-              single_active: false,
-            },
-          },
-        }}
-        vimeoconfig={{ iframeParams: { fullscreen: 0 } }}
-        onReady={() => {
-          setPlaying(true);
-        }}
-        onDuration={(duration) => {
-          setDuration(Math.floor(duration));
-        }}
-        onProgress={(progress) => {
-          setPlayed(Math.floor(progress.playedSeconds));
-        }}
-        onSeek={(e) => ("onSeek", e)}
-        onEnded={() => checkEnding()}
-      />
+        {/* REACT PLAYER */}
+        <div className="react-container">
+          <ReactPlayer
+            className="react-player"
+            ref={playerRef}
+            url={songs}
+            playing={playing}
+            autoPlay={true}
+            muted={mute}
+            style={{ pointerEvents: "none" }}
+            config={{
+              youtube: { playerVars: { modestbranding: 1, disablekb: 1 } },
+              soundcloud: {
+                options: {
+                  sharing: false,
+                  download: false,
+                  show_artwork: false,
+                  show_playcount: false,
+                  single_active: false,
+                },
+              },
+            }}
+            vimeoconfig={{ iframeParams: { fullscreen: 0 } }}
+            onReady={() => {
+              setPlaying(true);
+            }}
+            onDuration={(duration) => {
+              setDuration(Math.floor(duration));
+            }}
+            onProgress={(progress) => {
+              setPlayed(Math.floor(progress.playedSeconds));
+            }}
+            onSeek={(e) => ("onSeek", e)}
+            onEnded={() => checkEnding()}
+          />
 
-      {/* SLIDER DISPLAY SHOWING REMAINING TIME */}
-      <input
-        type="range"
-        min={0}
-        max={Duration}
-        step="any"
-        value={played}
-        onChange={handleSeekChange}
-      />
-      <button onClick={() => handleSync()}>Sync</button>
+          {/* SLIDER DISPLAY SHOWING REMAINING TIME */}
+          <Slider
+            className="time-slider"
+            type="range"
+            min={0}
+            max={Duration}
+            step={20}
+            value={played}
+            onChange={handleSeekChange}
+          />
+          <Button onClick={() => handleSync()}>Sync</Button>
 
-      <button onClick={() => sendSkip()}>Skip</button>
-      <button onClick={mute ? () => setMute(false) : () => setMute(true)}>
-        Mute
-      </button>
+          <Button onClick={() => sendSkip()}>Skip</Button>
+          <Button onClick={mute ? () => setMute(false) : () => setMute(true)}>
+            Mute
+          </Button>
+        </div>
 
-      {/*  CHAT DISPLAY */}
-      <form onSubmit={onMessageSubmit}>
-        <label>Chat</label>
-        <br />
-        {renderChat()}
-        <input type="text" onChange={handleChange} required />
-        <input type="submit" />
-      </form>
-
-      {/*  SONG SUBMISSION DISPLAY */}
-      {submitted ? (
-        <p>
-          Submission recieved! Wait until your song is played to submit another!
-        </p>
-      ) : (
-        <form onSubmit={onSongSubmit}>
-          <label>Song Submission</label>
-          <br />
-          <label>Song Name</label>
-          <input type="text" onChange={handleSongSubmitTitle} required />
-          <br />
-          <label>Song Link</label>
-          <input type="text" onChange={handleSongSubmit} required />
-          <br />
-          <input type="submit" />
-        </form>
-      )}
-
-      {/* UP NEXT DISPLAY */}
-      <label>Up Next:</label>
-      {renderUpNext()}
-    </div>
+        {/*  CHAT DISPLAY */}
+        <div className="sub-container">
+          <div className="chat-header">
+            <h3 className="chat-box-header">Chat</h3>
+            <div className="chat-box">{renderChat()}</div>
+            <form className="message-form" onSubmit={onMessageSubmit}>
+              <br />
+              <Input type="text" onChange={handleChange} required />
+              <Input type="submit" />
+            </form>
+          </div>
+          {/*  SONG SUBMISSION DISPLAY */}
+          <div className="space"></div>
+          <div className="queue">
+            {submitted ? (
+              <p>
+                Submission recieved! Wait until your song is played to submit
+                another!
+              </p>
+            ) : (
+              <form className="submit-form" onSubmit={onSongSubmit}>
+                <label>Song submission</label>
+                <br />
+                <Input
+                  placeholder="Song Name"
+                  className="song-name"
+                  type="text"
+                  onChange={handleSongSubmitTitle}
+                  required
+                />
+                <br />
+                <Input
+                  placeholder="Song Link"
+                  className="song-link"
+                  type="text"
+                  onChange={handleSongSubmit}
+                  required
+                />
+                <Input type="submit" />
+              </form>
+            )}
+            {/* UP NEXT DISPLAY */}
+            <div>
+              <h3 className="chat-box-header">Up Next:</h3>
+              <div className="song-submission">
+                <div className="queue-box">{renderUpNext()}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 }
 

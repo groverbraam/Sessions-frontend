@@ -6,20 +6,20 @@ import "../App.css";
 function RoomList() {
   const [roomName, setRoomName] = useState("");
   const [showcase, setShowcase] = useState(false);
-  const [admin, setAdmin] = useState(false);
+  const [admin, setAdmin] = useState(true);
   const [rooms, setRooms] = useState([]);
   const socketRef = useRef();
 
   const createRoom = () => {
     setAdmin(true);
-    socketRef.current.emit("create-room", (roomName, showcase, admin));
+    socketRef.current.emit("create-room", roomName, showcase, admin);
   };
 
   const handleRoomNameChange = (e) => {
     e.preventDefault();
     setRoomName(e.target.value);
   };
-
+  console.log(rooms);
   const handleShowcase = (e) => {
     e.preventDefault();
     setShowcase(e.target.checked);
@@ -33,7 +33,9 @@ function RoomList() {
     return rooms.map((room, index) => (
       <div className="roomList" key={index}>
         <p className="song">{room}</p>
-        <button onClick={() => joinRoom}>Join</button>
+        <Link onClick={() => joinRoom} to="/room">
+          <button>Join</button>
+        </Link>
       </div>
     ));
   };
@@ -45,7 +47,7 @@ function RoomList() {
 
   useEffect(() => {
     socketRef.current.on("created-room", (roomName, showcase, admin, rooms) => {
-      setRooms([...rooms, rooms]);
+      setRooms(rooms);
     });
   }, []);
 
@@ -55,23 +57,23 @@ function RoomList() {
       <input
         placeholder="Room Name"
         type="text"
-        onChange={(e) => handleRoomNameChange()}
+        onChange={(e) => handleRoomNameChange(e)}
       ></input>
       <label>Showcase</label>
       <input
         type="checkbox"
         value={true}
-        onChange={(e) => handleShowcase()}
+        onChange={(e) => handleShowcase(e)}
       ></input>
       <Link
-        onClick={(event) => (!roomName ? event.preventDefault() : createRoom())}
+        onClick={(e) => (!roomName ? e.preventDefault() : createRoom())}
         to="/room"
       >
         <button type="submit">Create</button>
       </Link>
-      <Link to="/room">
+      {/* <Link to="/room">
         <button type="submit">Create</button>
-      </Link>
+      </Link> */}
       {renderRoomList()}
     </div>
   );
